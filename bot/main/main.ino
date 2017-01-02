@@ -3,9 +3,6 @@
 #define M_R_F 6 // IN3 Yellow
 #define M_R_R 7 // IN4 Orange
 #define SERVO_OUT 9 // Servo Motor Output
-#define FWD 1
-#define OFF 0
-#define REV -1
 
 #define echoPin 2 // Echo Pin
 #define trigPin 3 // Trigger Pin
@@ -13,19 +10,14 @@
 
 #include <Servo.h>
 
+enum DriveState { REV, OFF, FWD };
+
 Servo myservo;  // create servo object to control a servo
 int pos = 0;    // variable to store the servo position
 
 int maximumRange = 200; // Maximum range needed
 int minimumRange = 0; // Minimum range needed
 long distance; // Duration used to calculate distance
-
-// Prototypes
-void motor_left(int state);
-void motor_right(int state);
-void motor_fwd();
-void motor_rev();
-void motor_stop();
 
 void setup() {
     Serial.begin (9600);
@@ -51,6 +43,48 @@ void setup() {
     delay(1000);
 }
 
+long get_dist() {
+    long duration;
+    /* The following trigPin/echoPin cycle is used to determine the
+    distance of the nearest object by bouncing soundwaves off of it. */ 
+    digitalWrite(trigPin, LOW); 
+    delayMicroseconds(2); 
+
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10); 
+
+    digitalWrite(trigPin, LOW);
+    duration = pulseIn(echoPin, HIGH);
+
+    //Calculate the distance (in cm) based on the speed of sound.
+    return duration / 58.2;
+}
+
+void drive(DriveState left, DriveState right) {
+    digitalWrite(M_L_F,LOW);
+    digitalWrite(M_L_R,LOW);
+    digitalWrite(M_R_F,LOW);
+    digitalWrite(M_R_R,LOW);
+
+    delay(15);
+
+    if (left == FWD) {
+        digitalWrite(M_L_F, HIGH);
+    } else if (left == REV) {
+        digitalWrite(M_L_R, HIGH);
+    }
+
+    if (right == FWD) {
+        digitalWrite(M_R_F, HIGH);
+    } else if (right == REV) {
+        digitalWrite(M_R_R, HIGH);
+    }
+}
+
+void servo_write(int angle) {
+    myservo.write(angle + 90);
+}
+
 void loop() {
     distance = get_dist();
 
@@ -69,76 +103,6 @@ void loop() {
     delay(50);
 
     servo_write(0);
-
-    motor_fwd();
-    delay(1000);
-    motor_stop();
-    delay(500);
-    motor_rev();
-    delay(1000);
-    motor_stop(); 
-    delay(3000);
 }
 
-long get_dist() {
-    long duration;
-    /* The following trigPin/echoPin cycle is used to determine the
-    distance of the nearest object by bouncing soundwaves off of it. */ 
-    digitalWrite(trigPin, LOW); 
-    delayMicroseconds(2); 
-
-    digitalWrite(trigPin, HIGH);
-    delayMicroseconds(10); 
-
-    digitalWrite(trigPin, LOW);
-    duration = pulseIn(echoPin, HIGH);
-
-    //Calculate the distance (in cm) based on the speed of sound.
-    return duration / 58.2;
-}
-
-void motor_left(int state) {
-    digitalWrite(M_L_F,LOW);
-    digitalWrite(M_L_R,LOW);
-
-    delay(15);
-
-    if (state == FWD) {
-        digitalWrite(M_L_F, HIGH);
-    } else if (state == REV) {
-        digitalWrite(M_L_R, HIGH);
-    }
-}
-
-void motor_right(int state) {
-    digitalWrite(M_R_F,LOW);
-    digitalWrite(M_R_R,LOW);
-
-    delay(15);
-
-    if (state == FWD) {
-        digitalWrite(M_R_F, HIGH);
-    } else if (state == REV) {
-        digitalWrite(M_R_R, HIGH);
-    }
-}
-
-void motor_fwd() {
-    motor_right(FWD);
-    motor_left(FWD);  
-}
-
-void motor_rev() {
-    motor_right(REV);
-    motor_left(REV);
-}
-
-void motor_stop() {
-    motor_right(OFF);
-    motor_left(OFF);
-}
-
-void servo_write(int angle) {
-    myservo.write(angle + 90);
-}
 
