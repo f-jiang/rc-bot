@@ -29,11 +29,13 @@ void motor_stop();
 
 void setup() {
     Serial.begin (9600);
+
+    // initialize ultrasonic sensor + servo mount
     pinMode(trigPin, OUTPUT);
     pinMode(echoPin, INPUT);
     pinMode(LEDPin, OUTPUT); // Use LED indicator (if required)
-
     myservo.attach(9);  // attaches the servo on pin 9 to the servo object
+    myservo.write(90);
 
     // Initialize Motor Pins
     pinMode(M_L_F, OUTPUT);
@@ -79,7 +81,6 @@ void loop() {
         digitalWrite(LEDPin, LOW); 
     }
 
-    //Delay 50ms before next reading.
     delay(50);
 
     servo_write(0);
