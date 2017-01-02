@@ -49,7 +49,7 @@ void setup() {
     // Initialize the Servo to 90 degrees (straight forward)
     myservo.write(90);
 
-    delay(10000);
+    delay(1000);
 }
 
 void loop() {
