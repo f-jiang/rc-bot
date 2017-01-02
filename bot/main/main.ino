@@ -1,5 +1,5 @@
-#define M_L_F 4 // IN1 Blue
-#define M_L_R 5 // IN2 Green
+#define M_L_F 5 // IN1 Blue
+#define M_L_R 4 // IN2 Green
 #define M_R_F 6 // IN3 Yellow
 #define M_R_R 7 // IN4 Orange
 #define SERVO_OUT 9 // Servo Motor Output
