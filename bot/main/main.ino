@@ -18,7 +18,7 @@ int pos = 0;    // variable to store the servo position
 
 int maximumRange = 200; // Maximum range needed
 int minimumRange = 0; // Minimum range needed
-long duration, distance; // Duration used to calculate distance
+long distance; // Duration used to calculate distance
 
 // Prototypes
 void motor_left(int state);
@@ -48,26 +48,11 @@ void setup() {
     digitalWrite(M_R_F, LOW);
     digitalWrite(M_R_R, LOW);
 
-    // Initialize the Servo to 90 degrees (straight forward)
-    myservo.write(90);
-
     delay(1000);
 }
 
 void loop() {
-    /* The following trigPin/echoPin cycle is used to determine the
-    distance of the nearest object by bouncing soundwaves off of it. */ 
-    digitalWrite(trigPin, LOW); 
-    delayMicroseconds(2); 
-
-    digitalWrite(trigPin, HIGH);
-    delayMicroseconds(10); 
-
-    digitalWrite(trigPin, LOW);
-    duration = pulseIn(echoPin, HIGH);
-
-    //Calculate the distance (in cm) based on the speed of sound.
-    distance = duration/58.2;
+    distance = get_dist();
 
     if (distance >= maximumRange || distance <= minimumRange) {
         /* Send a negative number to computer and Turn LED ON 
@@ -93,6 +78,23 @@ void loop() {
     delay(1000);
     motor_stop(); 
     delay(3000);
+}
+
+long get_dist() {
+    long duration;
+    /* The following trigPin/echoPin cycle is used to determine the
+    distance of the nearest object by bouncing soundwaves off of it. */ 
+    digitalWrite(trigPin, LOW); 
+    delayMicroseconds(2); 
+
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10); 
+
+    digitalWrite(trigPin, LOW);
+    duration = pulseIn(echoPin, HIGH);
+
+    //Calculate the distance (in cm) based on the speed of sound.
+    return duration / 58.2;
 }
 
 void motor_left(int state) {
